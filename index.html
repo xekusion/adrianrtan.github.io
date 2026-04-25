@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#PhotographyIsART | Adrian R. Tan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0a0a;
+            --color-bg-elevated: #141414;
+            --color-bg-card: #1a1a1a;
+            --color-text: #f0ece6;
+            --color-text-muted: #8a8580;
+            --color-accent: #c9a96e;
+            --color-accent-hover: #dfc08a;
+            --color-border: #2a2725;
+            --font-display: 'Instrument Serif', Georgia, serif;
+            --font-body: 'Outfit', system-ui, sans-serif;
+            --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-snappy: 0.2s ease;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1.5rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: background var(--transition-smooth), padding var(--transition-smooth);
+        }
+        nav.scrolled {
+            background: rgba(10, 10, 10, 0.92);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 1rem 3rem;
+        }
+        .nav-logo {
+            font-family: var(--font-display); font-size: 1.4rem;
+            color: var(--color-text); text-decoration: none; letter-spacing: 0.02em;
+        }
+        .nav-logo span { color: var(--color-accent); }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            font-size: 0.85rem; font-weight: 400; color: var(--color-text-muted);
+            text-decoration: none; text-transform: uppercase; letter-spacing: 0.15em;
+            transition: color var(--transition-snappy); position: relative;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 1px; background: var(--color-accent);
+            transition: width var(--transition-smooth);
+        }
+        .nav-links a:hover { color: var(--color-text); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-toggle {
+            display: none; flex-direction: column; gap: 5px;
+            cursor: pointer; background: none; border: none; padding: 4px;
+        }
+        .nav-toggle span { width: 24px; height: 1.5px; background: var(--color-text); transition: var(--transition-snappy); }
+
+        /* === HERO === */
+        .hero {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(201,169,110,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(201,169,110,0.05) 0%, transparent 40%),
+                        var(--color-bg);
+            z-index: 0;
+        }
+        .hero::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            z-index: 1; pointer-events: none;
+        }
+        .hero-content { position: relative; z-index: 2; animation: fadeUp 1.2s ease-out; }
+        .hero-tagline {
+            font-size: 0.75rem; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.4em; color: var(--color-accent); margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display); font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 400; line-height: 1.05; margin-bottom: 1.5rem;
+        }
+        .hero h1 em { font-style: italic; color: var(--color-accent); }
+        .hero-subtitle {
+            font-size: 1.05rem; color: var(--color-text-muted); font-weight: 300;
+            max-width: 500px; margin: 0 auto 2.5rem;
+        }
+        .hero-cta {
+            display: inline-block; padding: 0.85rem 2.5rem;
+            border: 1px solid var(--color-accent); color: var(--color-accent);
+            text-decoration: none; font-size: 0.8rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.2em;
+            transition: all var(--transition-smooth);
+        }
+        .hero-cta:hover { background: var(--color-accent); color: var(--color-bg); }
+        .scroll-indicator {
+            position: absolute; bottom: 2.5rem; left: 50%;
+            transform: translateX(-50%); z-index: 2; animation: bounce 2s infinite;
+        }
+        .scroll-indicator svg { width: 20px; height: 20px; stroke: var(--color-text-muted); }
+
+        /* === SECTIONS === */
+        section { padding: 7rem 3rem; }
+        .section-label {
+            font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.35em; color: var(--color-accent); margin-bottom: 1rem;
+        }
+        .section-title {
+            font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 400; margin-bottom: 1rem;
+        }
+        .section-desc { color: var(--color-text-muted); max-width: 550px; font-size: 0.95rem; margin-bottom: 3.5rem; }
+
+        /* === GALLERY CONTROLS === */
+        .gallery-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .gallery-filters { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 0.5rem 1.4rem; border: 1px solid var(--color-border);
+            background: transparent; color: var(--color-text-muted);
+            font-family: var(--font-body); font-size: 0.78rem; font-weight: 400;
+            letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+            transition: all var(--transition-snappy);
+        }
+        .filter-btn:hover, .filter-btn.active { border-color: var(--color-accent); color: var(--color-accent); }
+
+        /* Layout switcher buttons */
+        .layout-switcher { display: flex; gap: 0.5rem; }
+        .layout-btn {
+            width: 36px; height: 36px; border: 1px solid var(--color-border);
+            background: transparent; color: var(--color-text-muted); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all var(--transition-snappy);
+        }
+        .layout-btn:hover, .layout-btn.active { border-color: var(--color-accent); color: var(--color-accent); }
+        .layout-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+
+        /* === GALLERY ITEM (shared across all layouts) === */
+        .gallery-item { position: relative; overflow: hidden; cursor: pointer; }
+        .gallery-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.6s ease, filter 0.6s ease;
+        }
+        .gallery-item::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.6) 0%, rgba(10,10,10,0.1) 40%, transparent 100%);
+            opacity: 0; transition: opacity var(--transition-smooth);
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-item:hover::after { opacity: 1; }
+        .item-caption {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 1.2rem;
+            z-index: 2; opacity: 0; transform: translateY(10px);
+            transition: all var(--transition-smooth);
+        }
+        .gallery-item:hover .item-caption { opacity: 1; transform: translateY(0); }
+        .item-label { font-size: 0.9rem; font-family: var(--font-display); color: var(--color-text); margin-bottom: 0.2rem; }
+        .item-tag { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-accent); }
+
+        /* === LAYOUT 1: GRID (uniform squares) === */
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .gallery-grid .gallery-item { aspect-ratio: 1; }
+
+        /* === LAYOUT 2: MASONRY (CSS columns, natural aspect ratios) === */
+        .gallery-masonry { columns: 3; column-gap: 6px; }
+        .gallery-masonry .gallery-item { break-inside: avoid; margin-bottom: 6px; display: block; }
+        .gallery-masonry .gallery-item img { height: auto; }
+
+        /* === LAYOUT 3: EDITORIAL (magazine-style mixed sizes) === */
+        .gallery-editorial {
+            display: grid; gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 280px;
+        }
+        /* Featured hero image: spans 2x2 */
+        .gallery-editorial .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+        /* Wide panoramic */
+        .gallery-editorial .gallery-item:nth-child(5) { grid-column: span 2; }
+        /* Tall portrait */
+        .gallery-editorial .gallery-item:nth-child(7) { grid-row: span 2; }
+        /* Second featured image */
+        .gallery-editorial .gallery-item:nth-child(10) { grid-column: span 2; grid-row: span 2; }
+
+        /* Container visibility toggle */
+        .gallery-container { display: none; }
+        .gallery-container.active { display: block; }
+        .gallery-grid.active { display: grid; }
+        .gallery-editorial.active { display: grid; }
+
+        .gallery-count {
+            margin-top: 2rem; font-size: 0.75rem; color: var(--color-text-muted);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* === LIGHTBOX === */
+        .lightbox {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.96);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
+        .lightbox img { max-width: 85vw; max-height: 85vh; object-fit: contain; }
+        .lightbox-close {
+            position: absolute; top: 1.5rem; right: 2rem;
+            background: none; border: none; color: var(--color-text);
+            font-size: 2rem; cursor: pointer; font-weight: 300; opacity: 0.6;
+            transition: opacity var(--transition-snappy);
+        }
+        .lightbox-close:hover { opacity: 1; }
+        .lightbox-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--color-text);
+            font-size: 2.5rem; cursor: pointer; padding: 1rem;
+            opacity: 0.4; transition: opacity var(--transition-snappy); font-weight: 300;
+        }
+        .lightbox-nav:hover { opacity: 1; }
+        .lightbox-prev { left: 1rem; }
+        .lightbox-next { right: 1rem; }
+        .lightbox-counter {
+            position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            font-size: 0.75rem; color: var(--color-text-muted); letter-spacing: 0.2em;
+        }
+        .lightbox-caption {
+            position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%); text-align: center;
+        }
+        .lightbox-caption-title { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 0.2rem; }
+        .lightbox-caption-tag { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-accent); }
+
+        /* === ABOUT === */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+        .about-text p { color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding-top: 1rem; }
+        .stat { border-left: 1px solid var(--color-border); padding-left: 1.5rem; }
+        .stat-number { font-family: var(--font-display); font-size: 2.5rem; color: var(--color-accent); line-height: 1; margin-bottom: 0.4rem; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); }
+
+        /* === BLOG === */
+        .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .blog-card {
+            background: var(--color-bg-card); border: 1px solid var(--color-border);
+            overflow: hidden; transition: border-color var(--transition-smooth), transform var(--transition-smooth);
+            cursor: pointer; text-decoration: none; color: inherit; display: block;
+        }
+        .blog-card:hover { border-color: var(--color-accent); transform: translateY(-4px); }
+        .blog-card-image { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+        .blog-card-content { padding: 1.5rem; }
+        .blog-card-date { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--color-text-muted); margin-bottom: 0.6rem; }
+        .blog-card-title { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 0.6rem; }
+        .blog-card-excerpt { font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.6; }
+
+        /* === CONTACT === */
+        .contact { text-align: center; padding: 8rem 3rem; position: relative; }
+        .contact::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(201,169,110,0.04) 0%, transparent 60%); }
+        .contact > * { position: relative; z-index: 1; }
+        .contact .section-desc { margin-left: auto; margin-right: auto; }
+        .contact-email {
+            font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: var(--color-accent); text-decoration: none;
+            transition: color var(--transition-snappy); display: inline-block; margin-bottom: 3rem;
+        }
+        .contact-email:hover { color: var(--color-accent-hover); }
+        .social-links { display: flex; justify-content: center; gap: 2rem; }
+        .social-links a {
+            font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.15em;
+            color: var(--color-text-muted); text-decoration: none;
+            transition: color var(--transition-snappy);
+        }
+        .social-links a:hover { color: var(--color-text); }
+
+        /* === FOOTER === */
+        footer {
+            padding: 2rem 3rem; border-top: 1px solid var(--color-border);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; color: var(--color-text-muted);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-8px); }
+            60% { transform: translateX(-50%) translateY(-4px); }
+        }
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.revealed { opacity: 1; transform: translateY(0); }
+        .gallery-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.6s ease-out forwards; }
+        .gallery-item:nth-child(1) { animation-delay: 0s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.05s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.1s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.15s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.25s; }
+        .gallery-item:nth-child(7) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(8) { animation-delay: 0.35s; }
+        .gallery-item:nth-child(9) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(10) { animation-delay: 0.45s; }
+        .gallery-item:nth-child(11) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(12) { animation-delay: 0.55s; }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-masonry { columns: 2; }
+            .gallery-editorial { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 220px; }
+            .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+        }
+        @media (max-width: 768px) {
+            nav { padding: 1.2rem 1.5rem; }
+            nav.scrolled { padding: 0.8rem 1.5rem; }
+            .nav-toggle { display: flex; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 70%; height: 100vh;
+                background: var(--color-bg-elevated); flex-direction: column;
+                justify-content: center; align-items: center; gap: 2rem;
+                transition: right var(--transition-smooth);
+            }
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 1rem; }
+            section { padding: 4rem 1.5rem; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+            .gallery-masonry { columns: 2; column-gap: 4px; }
+            .gallery-editorial { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
+            .gallery-controls { flex-direction: column; align-items: flex-start; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .contact { padding: 5rem 1.5rem; }
+            footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+            .lightbox-nav { font-size: 1.8rem; }
+        }
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+            .gallery-masonry { columns: 1; }
+            .gallery-editorial { grid-template-columns: 1fr; grid-auto-rows: 250px; }
+            .gallery-editorial .gallery-item:nth-child(1),
+            .gallery-editorial .gallery-item:nth-child(5),
+            .gallery-editorial .gallery-item:nth-child(7),
+            .gallery-editorial .gallery-item:nth-child(10) { grid-column: span 1; grid-row: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <a href="#" class="nav-logo">#Photography<span>IsART</span></a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-tagline">Visual Storytelling</p>
+            <h1>Capturing <em>Light</em><br>& Perspective</h1>
+            <p class="hero-subtitle">Photography, drone cinematography, and visual narratives from Melbourne and beyond.</p>
+            <a href="#portfolio" class="hero-cta">View Portfolio</a>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         PORTFOLIO with 3 LAYOUT OPTIONS
+         ========================================== -->
+    <section id="portfolio">
+        <p class="section-label reveal">Portfolio</p>
+        <h2 class="section-title reveal">Selected Works</h2>
+        <p class="section-desc reveal">A curated collection across photography, drone, and commissioned work.</p>
+
+        <div class="gallery-controls reveal">
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="photography">Photography</button>
+                <button class="filter-btn" data-filter="drones">Drones</button>
+                <button class="filter-btn" data-filter="work">Work</button>
+            </div>
+            <div class="layout-switcher">
+                <button class="layout-btn active" data-layout="grid" title="Grid View">
+                    <svg viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/></svg>
+                </button>
+                <button class="layout-btn" data-layout="masonry" title="Masonry View">
+                    <svg viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="9"/><rect x="9" y="1" width="6" height="5"/><rect x="1" y="12" width="6" height="3"/><rect x="9" y="8" width="6" height="7"/></svg>
+                </button>
+                <button class="layout-btn" data-layout="editorial" title="Editorial View">
+                    <svg viewBox="0 0 16 16"><rect x="1" y="1" width="9" height="9"/><rect x="12" y="1" width="3" height="4"/><rect x="12" y="7" width="3" height="3"/><rect x="1" y="12" width="4" height="3"/><rect x="7" y="12" width="4" height="3"/><rect x="12" y="12" width="3" height="3"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!--
+            GALLERY SOURCE (hidden template).
+            JS clones these into each layout container.
+
+            TO ADD YOUR OWN IMAGES:
+            1. Replace src with your image path
+            2. Set data-category (photography / drones / work)
+            3. Set data-title & data-tag for lightbox captions
+            4. Set data-aspect (tall / wide / square) for masonry hints
+        -->
+        <div id="gallerySource" style="display:none;">
+            <div class="gallery-item" data-category="photography" data-title="Mountain Solitude" data-tag="Landscapes" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop" alt="Mountain landscape" loading="lazy">
+                <div class="item-caption"><div class="item-label">Mountain Solitude</div><div class="item-tag">Landscapes</div></div>
+            </div>
+            <div class="gallery-item" data-category="drones" data-title="Urban Grid" data-tag="Aerial" data-aspect="square">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=800&fit=crop" alt="City aerial" loading="lazy">
+                <div class="item-caption"><div class="item-label">Urban Grid</div><div class="item-tag">Aerial</div></div>
+            </div>
+            <div class="gallery-item" data-category="photography" data-title="Starlight Ridge" data-tag="Night Sky" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=500&fit=crop" alt="Night sky" loading="lazy">
+                <div class="item-caption"><div class="item-label">Starlight Ridge</div><div class="item-tag">Night Sky</div></div>
+            </div>
+            <div class="gallery-item" data-category="work" data-title="Neon Drift" data-tag="Commission" data-aspect="tall">
+                <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=900&fit=crop" alt="Tokyo" loading="lazy">
+                <div class="item-caption"><div class="item-label">Neon Drift</div><div class="item-tag">Commission</div></div>
+            </div>
+            <div class="gallery-item" data-category="photography" data-title="Morning Mist" data-tag="Nature" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop" alt="Forest fog" loading="lazy">
+                <div class="item-caption"><div class="item-label">Morning Mist</div><div class="item-tag">Nature</div></div>
+            </div>
+            <div class="gallery-item" data-category="drones" data-title="Canopy" data-tag="Aerial Forest" data-aspect="square">
+                <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=800&h=800&fit=crop" alt="Forest above" loading="lazy">
+                <div class="item-caption"><div class="item-label">Canopy</div><div class="item-tag">Aerial Forest</div></div>
+            </div>
+            <div class="gallery-item" data-category="drones" data-title="Shoreline" data-tag="Coastal" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&h=500&fit=crop" alt="Coastline" loading="lazy">
+                <div class="item-caption"><div class="item-label">Shoreline</div><div class="item-tag">Coastal</div></div>
+            </div>
+            <div class="gallery-item" data-category="work" data-title="Still Water" data-tag="Editorial" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=800&h=600&fit=crop" alt="Lake" loading="lazy">
+                <div class="item-caption"><div class="item-label">Still Water</div><div class="item-tag">Editorial</div></div>
+            </div>
+            <div class="gallery-item" data-category="photography" data-title="Golden Fields" data-tag="Golden Hour" data-aspect="wide">
+                <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=500&fit=crop" alt="Golden hour" loading="lazy">
+                <div class="item-caption"><div class="item-label">Golden Fields</div><div class="item-tag">Golden Hour</div></div>
+            </div>
+            <div class="gallery-item" data-category="photography" data-title="Fjord Silence" data-tag="Landscapes" data-aspect="tall">
+                <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=900&fit=crop" alt="Fjord" loading="lazy">
+                <div class="item-caption"><div class="item-label">Fjord Silence</div><div class="item-tag">Landscapes</div></div>
+            </div>
+            <div class="gallery-item" data-category="drones" data-title="River Veins" data-tag="Aerial" data-aspect="square">
+                <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=800&fit=crop" alt="River" loading="lazy">
+                <div class="item-caption"><div class="item-label">River Veins</div><div class="item-tag">Aerial</div></div>
+            </div>
+            <div class="gallery-item" data-category="work" data-title="Shadow & Steel" data-tag="Architecture" data-aspect="tall">
+                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&h=900&fit=crop" alt="Architecture" loading="lazy">
+                <div class="item-caption"><div class="item-label">Shadow & Steel</div><div class="item-tag">Architecture</div></div>
+            </div>
+        </div>
+
+        <div id="gridContainer" class="gallery-grid gallery-container active"></div>
+        <div id="masonryContainer" class="gallery-masonry gallery-container"></div>
+        <div id="editorialContainer" class="gallery-editorial gallery-container"></div>
+        <div class="gallery-count" id="galleryCount"></div>
+    </section>
+
+    <section id="about" style="background: var(--color-bg-elevated);">
+        <p class="section-label reveal">About</p>
+        <h2 class="section-title reveal">The Photographer</h2>
+        <div class="about-grid">
+            <div class="about-text reveal">
+                <p>I'm Adrian, a Melbourne-based photographer and visual storyteller. I work across landscape photography, drone cinematography, and commissioned projects, always chasing that perfect intersection of light, composition, and emotion.</p>
+                <p>Whether it's capturing the quiet drama of a foggy coastline or the geometric beauty of a city from 400 feet up, I believe every frame should tell a story worth pausing for.</p>
+                <p>Available for commissions, collaborations, and the occasional adventure. Let's make something beautiful.</p>
+            </div>
+            <div class="about-stats reveal">
+                <div class="stat"><div class="stat-number">5+</div><div class="stat-label">Years Shooting</div></div>
+                <div class="stat"><div class="stat-number">200+</div><div class="stat-label">Projects</div></div>
+                <div class="stat"><div class="stat-number">15k</div><div class="stat-label">Followers</div></div>
+                <div class="stat"><div class="stat-number">50+</div><div class="stat-label">Drone Flights</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog">
+        <p class="section-label reveal">Blog</p>
+        <h2 class="section-title reveal">Latest Stories</h2>
+        <p class="section-desc reveal">Thoughts on photography, gear, and the creative process.</p>
+        <div class="blog-grid reveal">
+            <a href="#" class="blog-card">
+                <img class="blog-card-image" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&h=375&fit=crop" alt="Blog" loading="lazy">
+                <div class="blog-card-content">
+                    <p class="blog-card-date">March 2026</p>
+                    <h3 class="blog-card-title">Chasing Light at the Great Ocean Road</h3>
+                    <p class="blog-card-excerpt">What three days of bad weather taught me about patience and persistence in landscape photography.</p>
+                </div>
+            </a>
+            <a href="#" class="blog-card">
+                <img class="blog-card-image" src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&h=375&fit=crop" alt="Drone blog" loading="lazy">
+                <div class="blog-card-content">
+                    <p class="blog-card-date">February 2026</p>
+                    <h3 class="blog-card-title">First Flight: Getting Started with Drone Photography</h3>
+                    <p class="blog-card-excerpt">Everything I wish I knew before buying my first drone. Spoiler: read the manual.</p>
+                </div>
+            </a>
+            <a href="#" class="blog-card">
+                <img class="blog-card-image" src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&h=375&fit=crop" alt="Gear blog" loading="lazy">
+                <div class="blog-card-content">
+                    <p class="blog-card-date">January 2026</p>
+                    <h3 class="blog-card-title">My 2026 Gear Setup</h3>
+                    <p class="blog-card-excerpt">The cameras, lenses, and accessories that survived another year of abuse in the field.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <p class="section-label reveal">Get in Touch</p>
+        <h2 class="section-title reveal">Let's Create Together</h2>
+        <p class="section-desc reveal">Available for commissions, collaborations, and creative projects.</p>
+        <a href="mailto:hello@adrianrtan.com" class="contact-email reveal">hello@adrianrtan.com</a>
+        <div class="social-links reveal">
+            <a href="#">Instagram</a><a href="#">Twitter</a><a href="#">YouTube</a><a href="#">LinkedIn</a>
+        </div>
+    </section>
+
+    <footer>
+        <span>&copy; 2026 Adrian R. Tan. All rights reserved.</span>
+        <span>#PhotographyIsART</span>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" aria-label="Previous">&#8249;</button>
+        <button class="lightbox-nav lightbox-next" aria-label="Next">&#8250;</button>
+        <img src="" alt="Expanded photo">
+        <div class="lightbox-caption">
+            <div class="lightbox-caption-title"></div>
+            <div class="lightbox-caption-tag"></div>
+        </div>
+        <div class="lightbox-counter"></div>
+    </div>
+
+    <script>
+        /* ============================================
+           NAV SCROLL EFFECT
+           ============================================ */
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        /* ============================================
+           MOBILE NAV
+           ============================================ */
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('open'));
+        });
+
+        /* ============================================
+           GALLERY ENGINE
+           Clones source items into 3 layout containers.
+           Each layout gets different image dimensions.
+           ============================================ */
+        const sourceItems = document.querySelectorAll('#gallerySource .gallery-item');
+        const containers = {
+            grid: document.getElementById('gridContainer'),
+            masonry: document.getElementById('masonryContainer'),
+            editorial: document.getElementById('editorialContainer')
+        };
+
+        let currentLayout = 'grid';
+        let currentFilter = 'all';
+
+        // Clone images into each layout with appropriate sizing
+        function populateGalleries() {
+            Object.values(containers).forEach(c => c.innerHTML = '');
+
+            sourceItems.forEach(item => {
+                const img = item.querySelector('img');
+                const baseSrc = img.src.split('?')[0];
+                const aspect = item.dataset.aspect || 'square';
+
+                // GRID layout: force square crops
+                const gridClone = item.cloneNode(true);
+                gridClone.querySelector('img').src = baseSrc + '?w=600&h=600&fit=crop';
+                containers.grid.appendChild(gridClone);
+
+                // MASONRY layout: respect natural aspect ratio
+                const masonryClone = item.cloneNode(true);
+                const masonrySizes = {
+                    tall: '?w=600&h=900&fit=crop',
+                    wide: '?w=800&h=500&fit=crop',
+                    square: '?w=700&h=700&fit=crop'
+                };
+                masonryClone.querySelector('img').src = baseSrc + (masonrySizes[aspect] || '?w=700&h=700&fit=crop');
+                containers.masonry.appendChild(masonryClone);
+
+                // EDITORIAL layout: slightly larger
+                const editClone = item.cloneNode(true);
+                editClone.querySelector('img').src = baseSrc + '?w=900&h=700&fit=crop';
+                containers.editorial.appendChild(editClone);
+            });
+
+            applyFilter();
+            attachLightboxHandlers();
+        }
+
+        // Show/hide items based on category filter
+        function applyFilter() {
+            const activeContainer = containers[currentLayout];
+            const items = activeContainer.querySelectorAll('.gallery-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const match = currentFilter === 'all' || item.dataset.category === currentFilter;
+                item.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            document.getElementById('galleryCount').textContent =
+                'Showing ' + visibleCount + ' of ' + sourceItems.length + ' works';
+        }
+
+        // Switch between the 3 layout modes
+        function switchLayout(layout) {
+            currentLayout = layout;
+            Object.entries(containers).forEach(([key, el]) => {
+                el.classList.toggle('active', key === layout);
+            });
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.layout === layout);
+            });
+            applyFilter();
+            attachLightboxHandlers();
+        }
+
+        // Wire up layout buttons
+        document.querySelectorAll('.layout-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchLayout(btn.dataset.layout));
+        });
+
+        // Wire up filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                applyFilter();
+                attachLightboxHandlers();
+            });
+        });
+
+        /* ============================================
+           LIGHTBOX WITH ARROW NAVIGATION
+           ============================================ */
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+        const lightboxClose = lightbox.querySelector('.lightbox-close');
+        const lightboxPrev = lightbox.querySelector('.lightbox-prev');
+        const lightboxNext = lightbox.querySelector('.lightbox-next');
+        const lightboxCounter = lightbox.querySelector('.lightbox-counter');
+        const lightboxCaptionTitle = lightbox.querySelector('.lightbox-caption-title');
+        const lightboxCaptionTag = lightbox.querySelector('.lightbox-caption-tag');
+
+        let lightboxImages = [];
+        let lightboxIndex = 0;
+
+        // Attach click handlers to all visible gallery items
+        function attachLightboxHandlers() {
+            const activeContainer = containers[currentLayout];
+            const visibleItems = [...activeContainer.querySelectorAll('.gallery-item')]
+                .filter(item => item.style.display !== 'none');
+
+            visibleItems.forEach((item, index) => {
+                // Clone-and-replace to remove any old listeners
+                const fresh = item.cloneNode(true);
+                item.parentNode.replaceChild(fresh, item);
+
+                fresh.addEventListener('click', () => {
+                    // Build lightbox array from currently visible items
+                    lightboxImages = [...activeContainer.querySelectorAll('.gallery-item')]
+                        .filter(i => i.style.display !== 'none')
+                        .map(i => ({
+                            src: i.querySelector('img').src.split('?')[0] + '?w=1600&h=1100&fit=crop',
+                            title: i.dataset.title || '',
+                            tag: i.dataset.tag || ''
+                        }));
+                    lightboxIndex = index;
+                    showLightboxImage();
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+        }
+
+        function showLightboxImage() {
+            const data = lightboxImages[lightboxIndex];
+            lightboxImg.src = data.src;
+            lightboxCaptionTitle.textContent = data.title;
+            lightboxCaptionTag.textContent = data.tag;
+            lightboxCounter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        lightboxPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+            showLightboxImage();
+        });
+
+        lightboxNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+            showLightboxImage();
+        });
+
+        lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+        // Keyboard: Escape to close, arrows to navigate
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') {
+                lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+                showLightboxImage();
+            }
+            if (e.key === 'ArrowRight') {
+                lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+                showLightboxImage();
+            }
+        });
+
+        /* ============================================
+           SCROLL REVEAL
+           ============================================ */
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        /* ============================================
+           INIT
+           ============================================ */
+        populateGalleries();
+    </script>
+
+</body>
+</html>
